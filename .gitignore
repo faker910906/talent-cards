@@ -1,0 +1,4 @@
+.workbuddy/
+.deploy/
+node_modules/
+*.md

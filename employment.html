@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>就业群 · 人才名片墙</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #f4f9f4;
+    --card-bg: #ffffff;
+    --card-shadow: 0 4px 24px rgba(46,125,50,0.06);
+    --text-main: #1a2e1a;
+    --text-sub: #5a7a5a;
+    --text-dim: #9ab89a;
+    --green: #2E7D32;
+    --green-light: #e8f5e9;
+    --green-glow: rgba(46,125,50,0.08);
+    --border: rgba(46,125,50,0.1);
+    --amber: #e67e22;
+    --amber-light: rgba(230,126,34,0.1);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text-main);
+    min-height: 100vh; min-height: 100dvh; overflow: hidden;
+    position: relative;
+    display: flex; flex-direction: column;
+    -webkit-user-select: none; user-select: none;
+  }
+
+  /* Top glow */
+  body::before {
+    content: ''; position: fixed;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(46,125,50,0.06), transparent 70%);
+    top: -120px; left: -80px;
+    border-radius: 50%; filter: blur(80px);
+    z-index: 0; pointer-events: none;
+  }
+
+  /* Bottom glow */
+  body::after {
+    content: ''; position: fixed;
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, rgba(129,199,132,0.06), transparent 70%);
+    bottom: -100px; right: -80px;
+    border-radius: 50%; filter: blur(80px);
+    z-index: 0; pointer-events: none;
+  }
+
+  /* ===== Nav ===== */
+  .nav {
+    position: relative; z-index: 10;
+    display: flex; align-items: center; gap: 12px;
+    padding: 24px 24px 0;
+    flex-shrink: 0;
+  }
+  .nav-icon {
+    width: 38px; height: 38px; border-radius: 12px;
+    background: var(--green); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .nav-title {
+    font-size: 18px; font-weight: 700; color: var(--text-main);
+  }
+  .nav-meta { margin-left: auto; font-size: 12px; color: var(--text-dim); }
+
+  /* ===== Carousel ===== */
+  .carousel {
+    position: relative; z-index: 5;
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    padding: 20px 60px 20px;
+    min-height: 0;
+    touch-action: pan-y;
+  }
+  @media (max-width: 640px) {
+    .carousel { padding: 16px 44px; }
+  }
+
+  /* Track */
+  .cards-track {
+    width: 100%; max-width: 420px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+  }
+  .cards-slide {
+    display: flex;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+  }
+
+  /* Card */
+  .card {
+    min-width: 100%;
+    background: var(--card-bg);
+    border-radius: 20px; overflow: hidden;
+    box-shadow: var(--card-shadow);
+  }
+  .card-accent {
+    height: 4px; width: 100%;
+    background: linear-gradient(90deg, var(--green), #81c784);
+  }
+  .card-body { padding: 28px 24px; }
+
+  .name-row {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 20px; padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .avatar {
+    width: 56px; height: 56px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 800; flex-shrink: 0;
+    background: var(--green-light);
+    color: var(--green); position: relative;
+  }
+  .avatar::after {
+    content: ''; position: absolute; bottom: 2px; right: 2px;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #66bb6a; border: 2px solid #fff;
+  }
+  .name-info h3 {
+    font-size: 20px; font-weight: 700; margin-bottom: 4px;
+    color: var(--text-main);
+  }
+  .name-info .location {
+    font-size: 13px; color: var(--text-sub);
+    display: flex; align-items: center; gap: 4px;
+  }
+  .name-info .badge {
+    display: inline-block; font-size: 11px; padding: 2px 10px;
+    border-radius: 10px; background: var(--green-light);
+    color: var(--green); margin-left: 8px; font-weight: 600;
+  }
+
+  .info-field { margin-bottom: 16px; }
+  .info-field:last-child { margin-bottom: 0; }
+
+  .field-label {
+    font-size: 12px; color: var(--text-dim); margin-bottom: 6px;
+    display: flex; align-items: center; gap: 6px;
+    letter-spacing: 0.5px; font-weight: 500;
+  }
+  .field-label .icon { font-size: 15px; }
+  .field-value { font-size: 14px; color: var(--text-main); line-height: 1.6; }
+
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; font-weight: 600;
+    padding: 4px 14px; border-radius: 20px;
+    background: var(--amber-light);
+    color: var(--amber);
+  }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    font-size: 12px; padding: 5px 14px; border-radius: 8px;
+    background: var(--green-light);
+    color: var(--green); transition: all 0.2s;
+    font-weight: 500;
+  }
+  .tag:hover { background: #c8e6c9; }
+
+  .salary { font-weight: 700; font-size: 17px; color: var(--green); }
+
+  .goal-box {
+    background: var(--green-light);
+    border-radius: 12px; padding: 14px 16px;
+    font-size: 13px; color: var(--text-sub); line-height: 1.6;
+    border-left: 3px solid var(--green);
+  }
+
+  /* Arrows */
+  .arrow {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    z-index: 10; width: 40px; height: 40px;
+    border-radius: 50%; border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text-sub); font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .arrow:hover {
+    border-color: var(--green); color: var(--green);
+    box-shadow: 0 4px 16px rgba(46,125,50,0.1);
+  }
+  .arrow:active { transform: translateY(-50%) scale(0.93); }
+  .arrow-left { left: 4px; }
+  .arrow-right { right: 4px; }
+  .arrow.disabled {
+    opacity: 0.2; cursor: default; pointer-events: none;
+  }
+  @media (max-width: 640px) {
+    .arrow { width: 36px; height: 36px; font-size: 18px; }
+  }
+
+  /* Controls */
+  .controls {
+    position: relative; z-index: 10;
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; padding: 0 24px 28px;
+    flex-shrink: 0;
+  }
+  .dots { display: flex; gap: 8px; }
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #c8e6c9; transition: all 0.3s; cursor: pointer;
+  }
+  .dot.active {
+    background: var(--green);
+    box-shadow: 0 0 8px rgba(46,125,50,0.3);
+    width: 22px; border-radius: 10px;
+  }
+  .counter { font-size: 13px; color: var(--text-dim); min-width: 40px; text-align: center; }
+
+  /* Empty */
+  .empty-state {
+    text-align: center; padding: 80px 0; color: var(--text-dim);
+    position: absolute; inset: 0; display: flex;
+    flex-direction: column; align-items: center; justify-content: center;
+  }
+  .empty-state .icon { font-size: 48px; margin-bottom: 16px; opacity: 0.3; }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="nav-icon">💼</div>
+  <div class="nav-title">就业群名片</div>
+  <div class="nav-meta">更新于 <span id="updateTime">—</span> · 共 <span id="totalCount">0</span> 人</div>
+</div>
+
+<div class="carousel" id="carousel">
+  <div class="cards-track" id="track">
+    <div class="cards-slide" id="slide"></div>
+  </div>
+  <button class="arrow arrow-left" id="arrowLeft" title="上一个">‹</button>
+  <button class="arrow arrow-right" id="arrowRight" title="下一个">›</button>
+</div>
+
+<div class="controls">
+  <span class="counter" id="counter">—</span>
+  <div class="dots" id="dots"></div>
+</div>
+
+<script>
+  // ===== 就业群数据（由自动化更新） =====
+  const CARDS = [
+    {
+      name: '铁拐李', number: '001号', district: '滨江',
+      industry: 'AI自动化测试 / 产品总监',
+      status: 'GAP39天',
+      target: '产品管理岗 · 目标薪资 <span class="salary">25K ~ 40K</span>',
+      resources: ['旅游公司内推', '简历优化', '补贴申领'],
+      goal: '靠谱岗位信息 + 公司避坑名单'
+    },
+    {
+      name: '大周', number: '002号', district: '萧山',
+      industry: '行政管理总监 / 总经理助理',
+      status: 'GAP60天',
+      target: '高级管理 · 目标薪资 <span class="salary">30K</span>',
+      resources: ['简历优化', '内推资源'],
+      goal: '随便瞅瞅'
+    },
+    {
+      name: 'Mia', number: '003号', district: '萧山',
+      industry: '低碳咨询',
+      status: 'GAP60天',
+      target: 'AI产品经理 · 目标薪资 <span class="salary">16K ~ 25K</span>',
+      resources: ['咨询公司内推', '简历优化'],
+      goal: '靠谱岗位信息 + 公司避坑名单'
+    },
+    {
+      name: '小黄', number: '004号', district: '余杭',
+      industry: '生物医药质量管理',
+      status: 'GAP100天',
+      target: '跨境外贸运营岗 · 目标薪资 <span class="salary">6K ~ 9K</span>',
+      resources: ['检测公司内推', '简历优化'],
+      goal: '靠谱岗位信息 + 公司避坑名单'
+    },
+    {
+      name: '槑', number: '005号', district: '滨江',
+      industry: '律师 / 法务',
+      status: '离职重新找工作',
+      target: '法务 / 合规',
+      resources: ['法律咨询', '民事纠纷', '劳动仲裁'],
+      goal: '法务岗位信息'
+    }
+  ];
+
+  const UPDATE_TIME = '2026-07-02 12:00';
+  let currentIndex = 0;
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let isSwiping = false;
+
+  const slide = document.getElementById('slide');
+  const track = document.getElementById('track');
+  const dotsEl = document.getElementById('dots');
+  const counterEl = document.getElementById('counter');
+  const arrowL = document.getElementById('arrowLeft');
+  const arrowR = document.getElementById('arrowRight');
+  const carousel = document.getElementById('carousel');
+
+  function render() {
+    if (CARDS.length === 0) {
+      track.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>暂无成员信息</p></div>';
+      arrowL.classList.add('disabled');
+      arrowR.classList.add('disabled');
+      dotsEl.innerHTML = '';
+      counterEl.textContent = '—';
+      document.getElementById('totalCount').textContent = '0';
+      return;
+    }
+
+    document.getElementById('totalCount').textContent = CARDS.length;
+    document.getElementById('updateTime').textContent = UPDATE_TIME;
+
+    slide.innerHTML = CARDS.map((c, i) => `
+      <div class="card" style="min-width:100%;${i > 0 ? '' : ''}">
+        <div class="card-accent"></div>
+        <div class="card-body">
+          <div class="name-row">
+            <div class="avatar">${c.name[0]}</div>
+            <div class="name-info">
+              <h3>${c.name}<span class="badge">${c.number}</span></h3>
+              <div class="location">📍 杭州 · ${c.district}区</div>
+            </div>
+          </div>
+          <div class="info-field">
+            <div class="field-label"><span class="icon">🎯</span>过往行业 / 岗位</div>
+            <div class="field-value">${c.industry}</div>
+          </div>
+          <div class="info-field">
+            <div class="field-label"><span class="icon">⏳</span>当前状态</div>
+            <div class="field-value"><span class="status-badge">${c.status}</span></div>
+          </div>
+          <div class="info-field">
+            <div class="field-label"><span class="icon">🚀</span>求职目标</div>
+            <div class="field-value">${c.target}</div>
+          </div>
+          <div class="info-field">
+            <div class="field-label"><span class="icon">🤝</span>可共享资源 / 经验</div>
+            <div class="tags">${c.resources.map(r => `<span class="tag">${r}</span>`).join('')}</div>
+          </div>
+          <div class="info-field">
+            <div class="field-label"><span class="icon">💡</span>进群最想获得</div>
+            <div class="goal-box">${c.goal}</div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    dotsEl.innerHTML = CARDS.map((_, i) =>
+      `<div class="dot${i === 0 ? ' active' : ''}" data-index="${i}"></div>`
+    ).join('');
+
+    dotsEl.querySelectorAll('.dot').forEach(dot => {
+      dot.addEventListener('click', () => goTo(parseInt(dot.dataset.index)));
+    });
+
+    updateActive();
+  }
+
+  function updateActive() {
+    slide.style.transform = `translateX(-${currentIndex * 100}%)`;
+    dotsEl.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === currentIndex);
+    });
+    counterEl.textContent = `${currentIndex + 1} / ${CARDS.length}`;
+    arrowL.classList.toggle('disabled', currentIndex === 0);
+    arrowR.classList.toggle('disabled', currentIndex === CARDS.length - 1);
+  }
+
+  function goTo(index) {
+    if (index < 0 || index >= CARDS.length) return;
+    currentIndex = index;
+    updateActive();
+  }
+
+  function prev() { goTo(currentIndex - 1); }
+  function next() { goTo(currentIndex + 1); }
+
+  arrowL.addEventListener('click', prev);
+  arrowR.addEventListener('click', next);
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+  });
+
+  // Touch swipe
+  track.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    isSwiping = true;
+    slide.style.transition = 'none';
+  }, { passive: true });
+
+  track.addEventListener('touchmove', e => {
+    if (!isSwiping) return;
+    const dx = e.touches[0].clientX - touchStartX;
+    const dy = e.touches[0].clientY - touchStartY;
+    if (Math.abs(dy) > Math.abs(dx) * 1.2) { isSwiping = false; return; }
+    const offset = -currentIndex * 100 + (dx / track.offsetWidth) * 100;
+    slide.style.transform = `translateX(${offset}%)`;
+  }, { passive: true });
+
+  track.addEventListener('touchend', e => {
+    if (!isSwiping) return;
+    isSwiping = false;
+    slide.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) { dx < 0 ? next() : prev(); }
+    else { updateActive(); }
+  });
+
+  // Mouse drag
+  let mouseDown = false, mouseStartX = 0;
+  track.addEventListener('mousedown', e => {
+    mouseDown = true; mouseStartX = e.clientX;
+    slide.style.transition = 'none'; e.preventDefault();
+  });
+  window.addEventListener('mousemove', e => {
+    if (!mouseDown) return;
+    const dx = e.clientX - mouseStartX;
+    const offset = -currentIndex * 100 + (dx / track.offsetWidth) * 100;
+    slide.style.transform = `translateX(${offset}%)`;
+  });
+  window.addEventListener('mouseup', e => {
+    if (!mouseDown) return;
+    mouseDown = false;
+    slide.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    const dx = e.clientX - mouseStartX;
+    if (Math.abs(dx) > 60) { dx < 0 ? next() : prev(); }
+    else { updateActive(); }
+  });
+
+  render();
+</script>
+</body>
+</html>

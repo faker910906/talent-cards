@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>创业群 · 人才名片墙</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #f4f9f7;
+    --card-bg: #ffffff;
+    --card-shadow: 0 4px 24px rgba(0,137,123,0.06);
+    --text-main: #1a2a26;
+    --text-sub: #5a7a70;
+    --text-dim: #9ab8ae;
+    --teal: #00897B;
+    --teal-light: #e0f2f1;
+    --teal-glow: rgba(0,137,123,0.08);
+    --border: rgba(0,137,123,0.1);
+    --magenta: #e91e63;
+    --magenta-light: rgba(233,30,99,0.08);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text-main);
+    min-height: 100vh; min-height: 100dvh; overflow: hidden;
+    position: relative;
+    display: flex; flex-direction: column;
+    -webkit-user-select: none; user-select: none;
+  }
+
+  body::before {
+    content: ''; position: fixed;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0,137,123,0.06), transparent 70%);
+    top: -120px; right: -80px;
+    border-radius: 50%; filter: blur(80px);
+    z-index: 0; pointer-events: none;
+  }
+
+  body::after {
+    content: ''; position: fixed;
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, rgba(128,203,196,0.06), transparent 70%);
+    bottom: -100px; left: -80px;
+    border-radius: 50%; filter: blur(80px);
+    z-index: 0; pointer-events: none;
+  }
+
+  /* ===== Nav ===== */
+  .nav {
+    position: relative; z-index: 10;
+    display: flex; align-items: center; gap: 12px;
+    padding: 24px 24px 0;
+    flex-shrink: 0;
+  }
+  .nav-icon {
+    width: 38px; height: 38px; border-radius: 12px;
+    background: var(--teal); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .nav-title {
+    font-size: 18px; font-weight: 700; color: var(--text-main);
+  }
+  .nav-meta { margin-left: auto; font-size: 12px; color: var(--text-dim); }
+
+  /* ===== Carousel ===== */
+  .carousel {
+    position: relative; z-index: 5;
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    padding: 20px 60px 20px;
+    min-height: 0;
+    touch-action: pan-y;
+  }
+  @media (max-width: 640px) {
+    .carousel { padding: 16px 44px; }
+  }
+
+  /* Track */
+  .cards-track {
+    width: 100%; max-width: 420px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+  }
+  .cards-slide {
+    display: flex;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+  }
+
+  /* Card */
+  .card {
+    min-width: 100%;
+    background: var(--card-bg);
+    border-radius: 20px; overflow: hidden;
+    box-shadow: var(--card-shadow);
+  }
+  .card-accent {
+    height: 4px; width: 100%;
+    background: linear-gradient(90deg, var(--teal), #80cbc4);
+  }
+  .card-body { padding: 28px 24px; }
+
+  .name-row {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 20px; padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .avatar {
+    width: 56px; height: 56px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 800; flex-shrink: 0;
+    background: var(--teal-light);
+    color: var(--teal); position: relative;
+  }
+  .avatar::after {
+    content: ''; position: absolute; bottom: 2px; right: 2px;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #4db6ac; border: 2px solid #fff;
+  }
+  .name-info h3 {
+    font-size: 20px; font-weight: 700; margin-bottom: 4px;
+    color: var(--text-main);
+  }
+  .name-info .location {
+    font-size: 13px; color: var(--text-sub);
+    display: flex; align-items: center; gap: 4px;
+  }
+  .name-info .badge {
+    display: inline-block; font-size: 11px; padding: 2px 10px;
+    border-radius: 10px; background: var(--teal-light);
+    color: var(--teal); margin-left: 8px; font-weight: 600;
+  }
+
+  .info-field { margin-bottom: 16px; }
+  .info-field:last-child { margin-bottom: 0; }
+
+  .field-label {
+    font-size: 12px; color: var(--text-dim); margin-bottom: 6px;
+    display: flex; align-items: center; gap: 6px;
+    letter-spacing: 0.5px; font-weight: 500;
+  }
+  .field-label .icon { font-size: 15px; }
+  .field-value { font-size: 14px; color: var(--text-main); line-height: 1.6; }
+
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; font-weight: 600;
+    padding: 4px 14px; border-radius: 20px;
+    background: var(--magenta-light);
+    color: var(--magenta);
+  }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    font-size: 12px; padding: 5px 14px; border-radius: 8px;
+    background: var(--teal-light);
+    color: var(--teal); transition: all 0.2s;
+    font-weight: 500;
+  }
+  .tag:hover { background: #b2dfdb; }
+
+  .goal-box {
+    background: var(--teal-light);
+    border-radius: 12px; padding: 14px 16px;
+    font-size: 13px; color: var(--text-sub); line-height: 1.6;
+    border-left: 3px solid var(--teal);
+  }
+
+  .need-tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; padding: 5px 12px; border-radius: 8px;
+    background: var(--magenta-light);
+    color: var(--magenta);
+    margin-right: 6px; margin-bottom: 6px;
+  }
+
+  .empty-text { color: var(--text-dim); font-style: italic; }
+
+  /* Arrows */
+  .arrow {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    z-index: 10; width: 40px; height: 40px;
+    border-radius: 50%; border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text-sub); font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .arrow:hover {
+    border-color: var(--teal); color: var(--teal);
+    box-shadow: 0 4px 16px rgba(0,137,123,0.1);
+  }
+  .arrow:active { transform: translateY(-50%) scale(0.93); }
+  .arrow-left { left: 4px; }
+  .arrow-right { right: 4px; }
+  .arrow.disabled {
+    opacity: 0.2; cursor: default; pointer-events: none;
+  }
+  @media (max-width: 640px) {
+    .arrow { width: 36px; height: 36px; font-size: 18px; }
+  }
+
+  /* Controls */
+  .controls {
+    position: relative; z-index: 10;
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; padding: 0 24px 28px;
+    flex-shrink: 0;
+  }
+  .dots { display: flex; gap: 8px; }
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #b2dfdb; transition: all 0.3s; cursor: pointer;
+  }
+  .dot.active {
+    background: var(--teal);
+    box-shadow: 0 0 8px rgba(0,137,123,0.3);
+    width: 22px; border-radius: 10px;
+  }
+  .counter { font-size: 13px; color: var(--text-dim); min-width: 40px; text-align: center; }
+
+  /* Empty */
+  .empty-state {
+    text-align: center; padding: 80px 0; color: var(--text-dim);
+    position: absolute; inset: 0; display: flex;
+    flex-direction: column; align-items: center; justify-content: center;
+  }
+  .empty-state .icon { font-size: 48px; margin-bottom: 16px; opacity: 0.3; }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="nav-icon">🚀</div>
+  <div class="nav-title">创业群名片</div>
+  <div class="nav-meta">更新于 <span id="updateTime">—</span> · 共 <span id="totalCount">0</span> 人</div>
+</div>
+
+<div class="carousel" id="carousel">
+  <div class="cards-track" id="track">
+    <div class="cards-slide" id="slide"></div>
+  </div>
+  <button class="arrow arrow-left" id="arrowLeft" title="上一个">‹</button>
+  <button class="arrow arrow-right" id="arrowRight" title="下一个">›</button>
+</div>
+
+<div class="controls">
+  <span class="counter" id="counter">—</span>
+  <div class="dots" id="dots"></div>
+</div>
+
+<script>
+  // ===== 创业群数据（由自动化更新） =====
+  const CARDS = [
+    {
+      name: '铁拐李', number: '001号', district: '滨江',
+      skills: ['产品策略', '产品设计', '产品运营'],
+      status: 'Gap全职搞',
+      direction: ['IP孵化', '创意软件'],
+      value: ['能出脚本', '能做设计', '可露脸'],
+      partner: '<span class="need-tag">🔧 软件缺技术</span><span class="need-tag">🎬 IP缺拍摄</span><span class="need-tag">✂️ IP缺剪辑</span>'
+    },
+    {
+      name: '大周', number: '002号', district: '萧山',
+      skills: ['商业拆解', '商业搭建', 'AIGC', 'Vibe Coding'],
+      status: 'Gap全职搞AI文旅',
+      direction: ['创意软件', 'AI技术方向'],
+      value: ['对接资源', '商业化咨询'],
+      partner: '缺技术合伙人'
+    },
+    {
+      name: 'Mia', number: '003号', district: '萧山',
+      skills: ['低碳咨询', 'Vibe Coding', '社群活动策划'],
+      status: 'Gap全职搞OPC社群',
+      direction: ['跨境电商', 'Agent开发'],
+      value: ['低碳咨询信息', '线下活动共创', '资源链接'],
+      partner: '缺运营合伙人'
+    },
+    {
+      name: '白菜', number: '004号', district: '拱墅',
+      skills: ['接法事', '风水堪舆', '批八字'],
+      status: 'Gap全职搞',
+      direction: ['电商直播', '运营'],
+      value: [],
+      partner: '相互鼓励摸索自媒体的搭子，拒授课'
+    },
+    {
+      name: '范范', number: '005号', district: '上城',
+      skills: ['平面设计', '公众号', '目前也有在做社群'],
+      status: 'Gap全职搞',
+      direction: ['IP孵化', '设计服务'],
+      value: ['能做设计', '能剪辑简单滴'],
+      partner: '都行，目前也有跟小伙伴一起做社群接的文旅的活有场地有资源，希望大家可以一块碰撞出各种可能性'
+    },
+    {
+      name: '布林', number: '006号', district: '萧山',
+      skills: ['之前做过软件开发'],
+      status: 'Gap全职搞',
+      direction: ['竖屏短剧', '电商直播', '自媒体代运营'],
+      value: ['负责拍摄剪辑'],
+      partner: '<span class="need-tag">🎤 缺主播</span><span class="need-tag">📦 缺选品</span><span class="need-tag">🏢 缺运营合伙人</span>'
+    }
+  ];
+
+  const UPDATE_TIME = '2026-07-02 12:00';
+  let currentIndex = 0;
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let isSwiping = false;
+
+  const slide = document.getElementById('slide');
+  const track = document.getElementById('track');
+  const dotsEl = document.getElementById('dots');
+  const counterEl = document.getElementById('counter');
+  const arrowL = document.getElementById('arrowLeft');
+  const arrowR = document.getElementById('arrowRight');
+
+  function getValueHTML(v) {
+    if (Array.isArray(v)) return v.length > 0 ? v.map(x => `<span class="tag">${x}</span>`).join('') : '<span class="empty-text">— 暂未填写 —</span>';
+    if (!v || v.trim() === '') return '<span class="empty-text">— 暂未填写 —</span>';
+    if (v.startsWith('<')) return v;
+    return `<div class="goal-box">${v}</div>`;
+  }
+
+  function render() {
+    if (CARDS.length === 0) {
+      track.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>暂无成员信息</p></div>';
+      arrowL.classList.add('disabled');
+      arrowR.classList.add('disabled');
+      dotsEl.innerHTML = '';
+      counterEl.textContent = '—';
+      document.getElementById('totalCount').textContent = '0';
+      return;
+    }
+
+    document.getElementById('totalCount').textContent = CARDS.length;
+    document.getElementById('updateTime').textContent = UPDATE_TIME;
+
+    slide.innerHTML = CARDS.map(c => `
+      <div class="card" style="min-width:100%;">
+        <div class="card-accent"></div>
+        <div class="card-body">
+          <div class="name-row">
+            <div class="avatar">${c.name[0]}</div>
+            <div class="name-info">
+              <h3>${c.name}<span class="badge">${c.number}</span></h3>
+              <div class="location">📍 杭州 · ${c.district}区</div>
+            </div>
+          </div>
+          <div class="info-field">
+            <div class="field-label"><span class="icon">⚡</span>核心技能 / 手握资源</div>
+            <div class="tags">${getValueHTML(c.skills)}</div>
+          </div>
+          <div class="info-field">
+            <div class="field-label"><span class="icon">⏳</span>当前状态</div>
+            <div class="field-value"><span class="status-badge">${c.status}</span></div>
+          </div>
+          <div class="info-field">
+            <div class="field-label"><span class="icon">🧭</span>感兴趣的创业方向</div>
+            <div class="tags">${getValueHTML(c.direction)}</div>
+          </div>
+          <div class="info-field">
+            <div class="field-label"><span class="icon">💎</span>能提供的价值</div>
+            <div class="tags">${getValueHTML(c.value)}</div>
+          </div>
+          <div class="info-field">
+            <div class="field-label"><span class="icon">🔍</span>想找什么样的搭子</div>
+            <div class="field-value">${getValueHTML(c.partner)}</div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    dotsEl.innerHTML = CARDS.map((_, i) =>
+      `<div class="dot${i === 0 ? ' active' : ''}" data-index="${i}"></div>`
+    ).join('');
+
+    dotsEl.querySelectorAll('.dot').forEach(dot => {
+      dot.addEventListener('click', () => goTo(parseInt(dot.dataset.index)));
+    });
+
+    updateActive();
+  }
+
+  function updateActive() {
+    slide.style.transform = `translateX(-${currentIndex * 100}%)`;
+    dotsEl.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === currentIndex));
+    counterEl.textContent = `${currentIndex + 1} / ${CARDS.length}`;
+    arrowL.classList.toggle('disabled', currentIndex === 0);
+    arrowR.classList.toggle('disabled', currentIndex === CARDS.length - 1);
+  }
+
+  function goTo(index) {
+    if (index < 0 || index >= CARDS.length) return;
+    currentIndex = index;
+    updateActive();
+  }
+
+  function prev() { goTo(currentIndex - 1); }
+  function next() { goTo(currentIndex + 1); }
+
+  arrowL.addEventListener('click', prev);
+  arrowR.addEventListener('click', next);
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+  });
+
+  // Touch swipe
+  track.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    isSwiping = true;
+    slide.style.transition = 'none';
+  }, { passive: true });
+
+  track.addEventListener('touchmove', e => {
+    if (!isSwiping) return;
+    const dx = e.touches[0].clientX - touchStartX;
+    const dy = e.touches[0].clientY - touchStartY;
+    if (Math.abs(dy) > Math.abs(dx) * 1.2) { isSwiping = false; return; }
+    const offset = -currentIndex * 100 + (dx / track.offsetWidth) * 100;
+    slide.style.transform = `translateX(${offset}%)`;
+  }, { passive: true });
+
+  track.addEventListener('touchend', e => {
+    if (!isSwiping) return;
+    isSwiping = false;
+    slide.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) { dx < 0 ? next() : prev(); }
+    else { updateActive(); }
+  });
+
+  // Mouse drag
+  let mouseDown = false, mouseStartX = 0;
+  track.addEventListener('mousedown', e => {
+    mouseDown = true; mouseStartX = e.clientX;
+    slide.style.transition = 'none'; e.preventDefault();
+  });
+  window.addEventListener('mousemove', e => {
+    if (!mouseDown) return;
+    const dx = e.clientX - mouseStartX;
+    const offset = -currentIndex * 100 + (dx / track.offsetWidth) * 100;
+    slide.style.transform = `translateX(${offset}%)`;
+  });
+  window.addEventListener('mouseup', e => {
+    if (!mouseDown) return;
+    mouseDown = false;
+    slide.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    const dx = e.clientX - mouseStartX;
+    if (Math.abs(dx) > 60) { dx < 0 ? next() : prev(); }
+    else { updateActive(); }
+  });
+
+  render();
+</script>
+</body>
+</html>
