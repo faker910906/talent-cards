@@ -156,6 +156,15 @@
     color: var(--magenta);
   }
 
+  .offline-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; font-weight: 600;
+    padding: 4px 14px; border-radius: 20px;
+    background: #fff8e1;
+    color: #f9a825;
+    border: 1px solid rgba(249,168,35,0.2);
+  }
+
   .tags { display: flex; flex-wrap: wrap; gap: 8px; }
   .tag {
     font-size: 12px; padding: 5px 14px; border-radius: 8px;
@@ -261,6 +270,7 @@
   const CARDS = [
     {
       name: '铁拐李', number: '001号', district: '滨江',
+      offlineActivity: '0704初见',
       skills: ['产品策略', '产品设计', '产品运营'],
       status: 'Gap全职搞',
       direction: ['IP孵化', '创意软件'],
@@ -269,6 +279,7 @@
     },
     {
       name: '大周', number: '002号', district: '萧山',
+      offlineActivity: '无',
       skills: ['商业拆解', '商业搭建', 'AIGC', 'Vibe Coding', '多种多样'],
       status: 'Gap全职搞AI文旅',
       direction: ['创意软件', 'AI技术方向'],
@@ -277,6 +288,7 @@
     },
     {
       name: 'Mia', number: '003号', district: '萧山',
+      offlineActivity: '0704初见',
       skills: ['低碳咨询', 'Vibe Coding', '社群活动策划'],
       status: 'Gap全职搞OPC社群',
       direction: ['跨境电商', 'Agent开发'],
@@ -285,6 +297,7 @@
     },
     {
       name: '白菜', number: '004号', district: '拱墅',
+      offlineActivity: '0704初见',
       skills: ['接法事', '风水堪舆', '批八字'],
       status: 'Gap全职搞',
       direction: ['电商直播', '运营'],
@@ -293,6 +306,7 @@
     },
     {
       name: '范范', number: '005号', district: '上城',
+      offlineActivity: '0704初见',
       skills: ['平面设计', '公众号', '目前也有在做社群'],
       status: 'Gap全职搞',
       direction: ['IP孵化', '设计服务'],
@@ -301,6 +315,7 @@
     },
     {
       name: '布林', number: '006号', district: '萧山',
+      offlineActivity: '0704初见',
       skills: ['之前做过软件开发'],
       status: 'Gap全职搞',
       direction: ['竖屏短剧', '电商直播', '自媒体代运营'],
@@ -309,6 +324,7 @@
     },
     {
       name: '六月星/兔子', number: '007号', district: '萧山',
+      offlineActivity: '无',
       skills: ['会拍摄和剪辑', '有设备大疆、ccd、go3s', '会点直播'],
       status: '待业可全职搞',
       direction: ['摄影', '群像账号', 'vlog'],
@@ -317,6 +333,7 @@
     },
     {
       name: '悠然', number: '008号', district: '萧山',
+      offlineActivity: '无',
       skills: ['业务HRBP经理（13年从业经验）'],
       status: 'Gap期',
       direction: ['暂无方向'],
@@ -325,6 +342,7 @@
     },
     {
       name: '鱼饼', number: '009号', district: '萧山',
+      offlineActivity: '无',
       skills: ['新媒体运营'],
       status: 'Gap全职搞自媒体',
       direction: ['自媒体', '电商'],
@@ -333,6 +351,7 @@
     },
     {
       name: '九斤', number: '010号', district: '钱塘',
+      offlineActivity: '0704初见',
       skills: ['写文案？帮出片'],
       status: 'Gap躺平',
       direction: ['自媒体'],
@@ -341,6 +360,7 @@
     },
     {
       name: '南芷', number: '011号', district: '拱墅',
+      offlineActivity: '无',
       skills: ['产品交付', '懂一点销售', '家装方面资源多一点'],
       status: '刚开始gap',
       direction: ['需要先了解下'],
@@ -349,6 +369,7 @@
     },
     {
       name: '蛋糕超人', number: '012号', district: '余杭',
+      offlineActivity: '0704初见',
       skills: ['摄影', '拍摄', '剪辑'],
       status: '边Gap边做',
       direction: ['IP运营', '疗愈'],
@@ -357,6 +378,7 @@
     },
     {
       name: '小米', number: '013号', district: '萧山',
+      offlineActivity: '无',
       skills: ['会剪辑'],
       status: '兼职在做',
       direction: ['自媒体运营'],
@@ -365,6 +387,7 @@
     },
     {
       name: '洛伦', number: '014号', district: '拱墅',
+      offlineActivity: '无',
       skills: ['拍摄剪辑'],
       status: '找工作',
       direction: ['IP孵化'],
@@ -373,6 +396,7 @@
     },
     {
       name: '皮不卡秋秋', number: '015号', district: '上城',
+      offlineActivity: '无',
       skills: ['文案撰写', '图文排版', '设计', '拍摄', '基础剪辑'],
       status: 'Gap迷茫期',
       direction: ['IP孵化', '平台运营'],
@@ -381,6 +405,7 @@
     },
     {
       name: '笑笑', number: '016号', district: '萧山',
+      offlineActivity: '0704初见',
       skills: ['电商运营抖音小红书方向', '短视频剪辑', '有男装供应链', '有男装仓库和闲置办公室', '过往有积累一点达人商务和小演员模特微信'],
       status: 'Gap全职搞',
       direction: ['IP孵化', '电商网店'],
@@ -389,6 +414,7 @@
     },
     {
       name: '小面包', number: '017号', district: '萧山',
+      offlineActivity: '无',
       skills: ['电商运营'],
       status: 'Gap全职搞',
       direction: ['IP孵化', '电商运营'],
@@ -397,6 +423,7 @@
     },
     {
       name: '壹叁', number: '018号', district: '拱墅',
+      offlineActivity: '0704初见',
       skills: ['ui ux设计', '活动策划执行'],
       status: '兼职',
       direction: ['短视频', '综艺', '文创'],
@@ -405,6 +432,7 @@
     },
     {
       name: '妍希', number: '019号', district: '海宁盐仓',
+      offlineActivity: '无',
       skills: ['数据分析'],
       status: '离职',
       direction: ['非遗项目'],
@@ -413,6 +441,7 @@
     },
     {
       name: '艾淼淼', number: '020号', district: '萧山',
+      offlineActivity: '0704初见',
       skills: ['暂无'],
       status: '纯新手想入行',
       direction: ['自媒体代运营'],
@@ -421,6 +450,7 @@
     },
     {
       name: '叶小包', number: '021号', district: '拱墅',
+      offlineActivity: '无',
       skills: ['UI设计', '策划', '会设计海报', '会剪辑摄影', '会写公众号', '会AIGC'],
       status: '待业中 / 纯新手想尝试新方向',
       direction: ['IP孵化', '自媒体运营', '手工创作'],
@@ -429,6 +459,7 @@
     },
     {
       name: 'MMY', number: '022号', district: '拱墅',
+      offlineActivity: '无',
       skills: ['5年以上短视频运营经验（全栈）'],
       status: '筹备',
       direction: ['自媒体文旅（想把中国的农村都走一遍,用镜头记录）'],
@@ -437,6 +468,7 @@
     },
     {
       name: '慕白衣', number: '023号', district: '余杭',
+      offlineActivity: '无',
       skills: ['烘焙美食技能'],
       status: 'Gap全职可兼职做',
       direction: ['综艺', '美食视频'],
@@ -445,6 +477,7 @@
     },
     {
       name: '牵尘', number: '024号', district: '余杭',
+      offlineActivity: '无',
       skills: [],
       status: 'Gap全职搞，纯新手想入行',
       direction: ['竖屏短剧', '电商直播'],
@@ -453,15 +486,43 @@
     },
     {
       name: 'Mia公主', number: '025号', district: '余杭',
+      offlineActivity: '无',
       skills: ['运营自媒体账号—小红书5.7w粉、抖音1.3w粉'],
       status: 'Gap全职自媒体',
       direction: ['实体轻创业', 'IP孵化', '电商直播', '自媒体代运营'],
       value: ['文案', '剪辑', '拍摄'],
       partner: '有没有想一起实体轻创业的宝子！一起做一些产品'
+    },
+    {
+      name: 'Jin仔', number: '026号', district: '上城',
+      offlineActivity: '无',
+      skills: ['活动策划', '设计'],
+      status: 'Gap期',
+      direction: ['寻找中'],
+      value: ['活动策划'],
+      partner: '不设限'
+    },
+    {
+      name: '伦伦', number: '027号', district: '滨江',
+      offlineActivity: '无',
+      skills: ['工程造价', '施工队伍资源'],
+      status: '纯新手想入行',
+      direction: ['正在寻找'],
+      value: ['可露脸', '能对接供应链', '沟通'],
+      partner: '有趣的搭子'
+    },
+    {
+      name: '小1', number: '028号', district: '余杭',
+      offlineActivity: '无',
+      skills: ['平面设计', '手绘', '有美妆经验'],
+      status: '纯新手想入行',
+      direction: ['自媒体', '电商运营'],
+      value: ['能做设计', '能负责拍摄剪辑'],
+      partner: '软件缺运营'
     }
   ];
 
-  const UPDATE_TIME = '2026-07-06 16:40';
+  const UPDATE_TIME = '2026-07-08 11:55';
   let currentIndex = 0;
   let touchStartX = 0;
   let touchStartY = 0;
@@ -506,6 +567,7 @@
               <div class="location">📍 杭州 · ${c.district}区</div>
             </div>
           </div>
+          ${c.offlineActivity && c.offlineActivity !== '无' ? `<div class="info-field"><div class="field-label"><span class="icon">🤝</span>线下活动参与</div><div class="field-value"><span class="offline-badge">${c.offlineActivity}</span></div></div>` : ''}
           <div class="info-field">
             <div class="field-label"><span class="icon">⚡</span>核心技能 / 手握资源</div>
             <div class="tags">${getValueHTML(c.skills)}</div>
